@@ -42,7 +42,21 @@ go.onclick = async () => {
   out.textContent = `💀 Liquidation ETH price = $${liqEth.toFixed(2)}\n(current ~$${ethPrice})`;
   if (liqEth / ethPrice < 1.05) {
     Toastify({text:"⚠️  Within 5% !",backgroundColor:"red",duration:4000}).showToast();
-    setTimeout(()=> window.open(PAY_LINK,"_blank"), 1500);
+    setTimeout(() => {
+    var options = {
+        "key": "rzp_live_ROuAMmFRzMAVc3",  // we fix in next step
+        "amount": 18000,                     // 150 ₹ = 15000 paise
+        "currency": "INR",
+        "name": "stETH Tool",
+        "description": "Unlock liquidation CSV",
+        "handler": function () {
+            Toastify({ text: "✅ Paid!", backgroundColor: "green", duration: 3000 }).showToast();
+            // here you can later unlock the hidden download
+        }
+    };
+    new Razorpay(options).open();
+}, 1500);
+    
   }
 };
 </script>
