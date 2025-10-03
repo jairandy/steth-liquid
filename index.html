@@ -3,7 +3,16 @@
 <head>
   <meta charset="utf-8">
   <title>stETH Liq Check</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7/dist/ethers.min.js"></script>
+  <link rel="icon" href="data:,">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" crossorigin="anonymous"></script>
+  <script>
+  if (!window.ethers) {
+    var alt = document.createElement('script');
+    alt.src = 'https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js';
+    alt.crossOrigin = 'anonymous';
+    document.head.appendChild(alt);
+  }
+  </script>
   <style>body{font-family:sans-serif}button{padding:10px}</style>
 </head>
 <body>
