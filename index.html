@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>stETH Loop Liquidation Price</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://cdn.ethers.io/lib/ethers-5.7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <style>body{font-family:sans-serif;padding:20px}button{padding:10px 20px}</style>
+</head>
+<body>
+  <h2>🪙 stETH Loop Liquidation Price</h2>
+  <p>Enter your wallet → get the exact ETH price that kills your Aave loan.</p>
+  <input id="addr" placeholder="0x... (wallet address)" style="width:320px">
+  <button id="go">💥 Calculate</button>
+  <pre id="out"></pre>
+
+<script>
+// ---------- free RPC ----------
+const provider = new ethers.providers.JsonRpcProvider("https://eth-mainnet.g.alchemy.com/v2/demo");
+
+// ---------- Aave Pool ----------
+const pool = new ethers.Contract(
+  "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+  ["function getUserAccountData(address) view returns (uint256,uint256,uint256,uint256,uint256,uint256)"],
+  provider
+);
+
+// ---------- Stripe pay-link ----------
+const PAY_LINK = "https://buy.stripe.com/TEST_REPLACE_WITH_REAL_LINK"; // <— we fix soon
+
+go.onclick = async () => {
+  if (!ethers.utils.isAddress(addr.value)) return alert("Bad address");
+  const [col, debt, , thresh] = await pool.getUserAccountData(addr.value);
+  const colUsd = Number(ethers.utils.formatUnits(col, 8));
+  const debtUsd = Number(ethers.utils.formatUnits(debt, 8));
+  if (debtUsd === 0) return alert("No debt found – you safe!");
+  const liqUsd = debtUsd / (thresh / 10000);
+  const ethPrice = 3300; // live in next step, 3300 placeholder
+  const liqEth = liqUsd / ethPrice;
+  out.textContent = `💀 Liquidation ETH price = $${liqEth.toFixed(2)}\n(current ~$${ethPrice})`;
+  if (liqEth / ethPrice < 1.05) {
+    Toastify({text:"⚠️  Within 5% !",backgroundColor:"red",duration:4000}).showToast();
+    setTimeout(()=> window.open(PAY_LINK,"_blank"), 1500);
+  }
+};
+</script>
+</body>
+</html>
